@@ -1,0 +1,142 @@
+{
+  "SettingsVersion": 1.2,
+  "SimMode": "Car",
+  "ViewMode": "",
+  "Vehicles": {
+      "CarLLV": {
+        "VehicleType": "PhysXCar",
+        "X": 150, "Y": -12, "Z": -1,
+        "Sensors": {
+          "Distance": {
+              "SensorType": 5,
+              "Enabled" : true,
+              "DrawDebugPoints": false
+          }
+        }
+       
+      },
+      "CarL1": {
+        "VehicleType": "PhysXCar",
+        "X":140, "Y": -12, "Z": -1,
+        "Sensors": {
+          "Distance": {
+              "SensorType": 5,
+              "Enabled" : true,
+              "DrawDebugPoints": false
+          }
+        }
+      },
+      "CarL2": {
+        "VehicleType": "PhysXCar",
+        "X": 130, "Y": -12, "Z": -1,
+        "Sensors": {
+          "Distance": {
+              "SensorType": 5,
+              "Enabled" : true,
+              "DrawDebugPoints": false
+          }
+        }
+      },
+      "CarL3": {
+        "VehicleType": "PhysXCar",
+        "X": 120, "Y": -12, "Z": -1,
+        "Sensors": {
+          "Distance": {
+              "SensorType": 5,
+              "Enabled" : true,
+              "DrawDebugPoints": false
+          }
+        }
+      },
+      "CarL4": {
+        "VehicleType": "PhysXCar",
+        "X": 110, "Y": -12, "Z": -1,
+        "Sensors": {
+          "Distance": {
+              "SensorType": 5,
+              "Enabled" : true,
+              "DrawDebugPoints": false
+          }
+        }
+      },
+      "CarL5": {
+        "VehicleType": "PhysXCar",
+        "X": 100, "Y": -12, "Z": -1,
+        "Sensors": {
+          "Distance": {
+              "SensorType": 5,
+              "Enabled" : true,
+              "DrawDebugPoints": false
+          }
+        }
+      },
+      "CarRLV": {
+        "VehicleType": "PhysXCar",
+        "X": 150, "Y": -3, "Z": -1,
+        "Sensors": {
+          "Distance": {
+              "SensorType": 5,
+              "Enabled" : true,
+              "DrawDebugPoints": false
+          }
+        }
+      },
+      "CarR1": {
+        "VehicleType": "PhysXCar",
+        "X": 140, "Y": -3, "Z": -1,
+        "Sensors": {
+          "Distance": {
+              "SensorType": 5,
+              "Enabled" : true,
+              "DrawDebugPoints": false
+          }
+        }
+      },
+      "CarR2": {
+        "VehicleType": "PhysXCar",
+        "X": 130, "Y": -3, "Z": -1,
+        "Sensors": {
+          "Distance": {
+              "SensorType": 5,
+              "Enabled" : true,
+              "DrawDebugPoints": false
+          }
+        }
+      },
+      "CarR3": {
+        "VehicleType": "PhysXCar",
+        "X": 120, "Y": -3, "Z": -1,
+        "Sensors": {
+          "Distance": {
+              "SensorType": 5,
+              "Enabled" : true,
+              "DrawDebugPoints": false
+          }
+        }
+      },
+      "CarR4": {
+        "VehicleType": "PhysXCar",
+        "X": 110, "Y": -3, "Z": -1,
+        "Sensors": {
+          "Distance": {
+              "SensorType": 5,
+              "Enabled" : true,
+              "DrawDebugPoints": false
+          }
+        }
+      },
+      "CarR5": {
+        "VehicleType": "PhysXCar",
+        "IsFpvVehicle":true,
+        "X": 100, "Y": -3, "Z": -1,
+        "Sensors": {
+          "Distance": {
+              "SensorType": 5,
+              "Enabled" : true,
+              "DrawDebugPoints": false
+          }
+        }
+      }
+  
+  }
+}
