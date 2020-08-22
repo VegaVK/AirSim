@@ -13,19 +13,19 @@ import random
 # Overall gains and parameters:
 Ka=0.9
 Kp=2
-Kv=1.5
+Kv=1
 L=5
-HwL=0.33
-HwR=0.6
+HwL=1.0
+HwR=1.0
 tau=0.211486816999979  #Measured from RunData.csv
-BadLR=90
-GoodToBad=20
-BadToGood=5
+BadLR=90.0
+GoodToBad=20.0
+BadToGood=50
 P=GoodToBad
 R=BadToGood
 h=BadLR
 PErr=P*(h)/(R+P)
-print('Gamma:' + str(1-PErr))
+print('Gamma:' + str(1-PErr/100))
 TimeStep=0.01
 TotalRunTime=35
 AccelScale=4.0
@@ -44,23 +44,24 @@ def GilbertPLFactor(GilbertState, PVal,RVal,Hval):
     Rtemp1=random.random()
     Rtemp2=random.random()
     Rtemp3=random.random()
+    # print('Rand1: ' +str(Rtemp1)+' Rand2: ' +str(Rtemp2)+' Rand3: ' +str(Rtemp3))
     
     # Good state=1, Bad state=0
     if GilbertState==1:
         PLFactor=1
     else:
-        if Rtemp1<=Hval/100:
+        if Rtemp1<=Hval/100.0:
             PLFactor=0
         else:
             PLFactor=1
     # Now change the Gilbert State for next step
     if GilbertState==1:
-        if Rtemp2<=PVal/100:
+        if Rtemp2<=PVal/100.0:
             OutState=0
         else:
             OutState=1
     else:
-        if Rtemp3<=RVal/100:
+        if Rtemp3<=RVal/100.0:
             OutState=1
         else:
             OutState=0
@@ -108,33 +109,8 @@ client.enableApiControl(True, "CarR4")
 client.enableApiControl(True, "CarR5")
 car_controls= airsim.CarControls()
 car_controls.is_manual_gear = False
-# car_controlsLLV = airsim.CarControls()
-# car_controlsRLV = airsim.CarControls()
-# car_controlsL1 = airsim.CarControls()
-# car_controlsL2 = airsim.CarControls()
-# car_controlsL3 = airsim.CarControls()
-# car_controlsL4 = airsim.CarControls()
-# car_controlsL5 = airsim.CarControls()
-# car_controlsR1 = airsim.CarControls()
-# car_controlsR2 = airsim.CarControls()
-# car_controlsR3 = airsim.CarControls()
-# car_controlsR4 = airsim.CarControls()
-# car_controlsR5 = airsim.CarControls()
 
-# car_controlsLLV.is_manual_gear = False
-# car_controlsRLV.is_manual_gear = False
-# car_controlsL1.is_manual_gear = False
-# car_controlsL2.is_manual_gear = False
-# car_controlsL3.is_manual_gear = False
-# car_controlsL4.is_manual_gear = False
-# car_controlsL5.is_manual_gear = False
-# car_controlsR1.is_manual_gear = False
-# car_controlsR2.is_manual_gear = False
-# car_controlsR3.is_manual_gear = False
-# car_controlsR4.is_manual_gear = False
-# car_controlsR5.is_manual_gear = False
-
-# Initiate all GilbertStates to 1:
+# Initiate all GilbertStates :
 GilbStateL1=1
 GilbStateL2=1
 GilbStateL3=1
@@ -172,7 +148,9 @@ while RunTime<TotalRunTime: # Max Run time;
     Plant(caccOut, "CarLLV")
     Plant(caccOut, "CarRLV")
     # print(caccOut)
+    
     # Now for the other FVs:
+
     PLFac,GilbStateL1=GilbertPLFactor(GilbStateL1,P,R,h)
     xiM=StateLLV.kinematics_estimated.position.x_val
     dxiM=StateLLV.speed
@@ -205,42 +183,44 @@ while RunTime<TotalRunTime: # Max Run time;
     dxiM=StateL4.speed
     ddxiM=StateL4.kinematics_estimated.linear_acceleration.x_val
     PLFac,GilbStateL5=GilbertPLFactor(GilbStateL5,P,R,h)
+    # print('PLFac: '+ str(PLFac) +'GilbertState: ' +str(GilbStateL5))
+
     caccOut=Controller(StateL5.kinematics_estimated.position.x_val,xiM,dxiM,ddxiM,StateL5.speed,PLFac,HwL)
     Plant(caccOut, "CarL5")
 
+    # For all Right side cars, force PLFac=1
     xiM=StateRLV.kinematics_estimated.position.x_val
     dxiM=StateRLV.speed
     ddxiM=StateRLV.kinematics_estimated.linear_acceleration.x_val
-    PLFac,GilbStateR1=GilbertPLFactor(GilbStateR1,P,R,h)
-    caccOut=Controller(StateR1.kinematics_estimated.position.x_val,xiM,dxiM,ddxiM,StateR1.speed,PLFac,HwR)
+    caccOut=Controller(StateR1.kinematics_estimated.position.x_val,xiM,dxiM,ddxiM,StateR1.speed,1,HwR)
     Plant(caccOut, "CarR1")
 
     xiM=StateR1.kinematics_estimated.position.x_val
     dxiM=StateR1.speed
     ddxiM=StateR1.kinematics_estimated.linear_acceleration.x_val
     PLFac,GilbStateR2=GilbertPLFactor(GilbStateR2,P,R,h)
-    caccOut=Controller(StateR2.kinematics_estimated.position.x_val,xiM,dxiM,ddxiM,StateR2.speed,PLFac,HwR)
+    caccOut=Controller(StateR2.kinematics_estimated.position.x_val,xiM,dxiM,ddxiM,StateR2.speed,1,HwR)
     Plant(caccOut, "CarR2")
 
     xiM=StateR2.kinematics_estimated.position.x_val
     dxiM=StateR2.speed
     ddxiM=StateR2.kinematics_estimated.linear_acceleration.x_val
     PLFac,GilbStateR3=GilbertPLFactor(GilbStateR3,P,R,h)
-    caccOut=Controller(StateR3.kinematics_estimated.position.x_val,xiM,dxiM,ddxiM,StateR3.speed,PLFac,HwR)
+    caccOut=Controller(StateR3.kinematics_estimated.position.x_val,xiM,dxiM,ddxiM,StateR3.speed,1,HwR)
     Plant(caccOut, "CarR3")
 
     xiM=StateR3.kinematics_estimated.position.x_val
     dxiM=StateR3.speed
     ddxiM=StateR3.kinematics_estimated.linear_acceleration.x_val
     PLFac,GilbStateR4=GilbertPLFactor(GilbStateR4,P,R,h)
-    caccOut=Controller(StateR4.kinematics_estimated.position.x_val,xiM,dxiM,ddxiM,StateR4.speed,PLFac,HwR)
+    caccOut=Controller(StateR4.kinematics_estimated.position.x_val,xiM,dxiM,ddxiM,StateR4.speed,1,HwR)
     Plant(caccOut, "CarR4")
 
     xiM=StateR4.kinematics_estimated.position.x_val
     dxiM=StateR4.speed
     ddxiM=StateR4.kinematics_estimated.linear_acceleration.x_val
     PLFac,GilbStateR5=GilbertPLFactor(GilbStateR5,P,R,h)
-    caccOut=Controller(StateR5.kinematics_estimated.position.x_val,xiM,dxiM,ddxiM,StateR5.speed,PLFac,HwR)
+    caccOut=Controller(StateR5.kinematics_estimated.position.x_val,xiM,dxiM,ddxiM,StateR5.speed,1,HwR)
     Plant(caccOut, "CarR5")
 
     # Now just sleep so the cars are allowed to move
