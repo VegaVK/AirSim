@@ -7,28 +7,6 @@
         "VehicleType": "PhysXCar",
         "IsFpvVehicle":true,
         "X": 0, "Y": -3, "Z": -1,
-        "Cameras": {
-          "IR_Center": {
-            "CaptureSettings": [
-              {
-                "ImageType": 7,
-                "Width": 640,
-                "Height": 512,
-                "FOV_Degrees": 90,
-                "AutoExposureSpeed": 100,
-                "AutoExposureBias": 0,
-                "AutoExposureMaxBrightness": 0.64,
-                "AutoExposureMinBrightness": 0.03,
-                "MotionBlurAmount": 0,
-                "TargetGamma": 1.0,
-                "ProjectionMode": "",
-                "OrthoWidth": 5.12
-              }
-            ],
-            "X":0, "Y": 0, "Z": -1.5,
-            "Pitch": 0, "Roll": 0, "Yaw": 0
-          }
-         },
         "Sensors": {
           "Distance": {
               "SensorType": 5,
@@ -55,8 +33,8 @@
   
   },
   "SubWindows": [
-    {"WindowID": 0, "ImageType": 0, "CameraName": "3", "Visible": true},
-    {"WindowID": 1, "ImageType": 7, "CameraName": "IR_Pano", "Visible": true},
-    {"WindowID": 2, "ImageType": 6, "CameraName": "3", "Visible": true}
+    {"WindowID": 0, "ImageType": 7, "CameraName": "3", "Visible": true},
+    {"WindowID": 1, "ImageType": 3, "CameraName": "0", "Visible": true},
+    {"WindowID": 2, "ImageType": 6, "CameraName": "4", "Visible": true}
   ]
 }

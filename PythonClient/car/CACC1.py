@@ -228,6 +228,7 @@ while RunTime<TotalRunTime: # Max Run time;
 
 
 #restore to original state
+print(StateRLV.kinematics_estimated.position.x_val)
 client.reset()
 
 client.enableApiControl(False)
