@@ -13,14 +13,15 @@ def CamMain():
     rate = rospy.Rate(20) # 10hz
     while not rospy.is_shutdown():
         # png_image = client.simGetImage("0", airsim.ImageType.Scene)
-        responses = client.simGetImages([airsim.ImageRequest("IR_Center", airsim.ImageType.Infrared, False, False)])
+        responses = client.simGetImages([airsim.ImageRequest("IR_Center", airsim.ImageType.Scene, False, False)])
         response=responses[0]
         img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8) 
         img_rgb = img1d.reshape(response.height,response.width, 3)
-        # original image is fliped vertically
-        # img_rgb = np.fliplr(img_rgb)
-        # print(img_rgb)
-        ThermalPub.publish(bridge.cv2_to_imgmsg(img_rgb, "rgb8"))
+
+        #Convert to grayscale to simulate thermal, convert image back to 3 channel format and publish:
+        img_gray= cv2.cvtColor(img_rgb, cv2.COLOR_BGR2GRAY)
+        img_rgb2=cv2.cvtColor(img_gray,cv2.COLOR_GRAY2RGB) 
+        ThermalPub.publish(bridge.cv2_to_imgmsg(img_rgb2, "mono8"))
         rate.sleep()
    
 

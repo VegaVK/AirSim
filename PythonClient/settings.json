@@ -12,9 +12,9 @@
             "CaptureSettings": [
               {
                 "ImageType": 7,
-                "Width": 640,
-                "Height": 512,
-                "FOV_Degrees": 90,
+                "Width": 1280,
+                "Height": 1024,
+                "FOV_Degrees": 60,
                 "AutoExposureSpeed": 100,
                 "AutoExposureBias": 0,
                 "AutoExposureMaxBrightness": 0.64,
@@ -25,7 +25,7 @@
                 "OrthoWidth": 5.12
               }
             ],
-            "X":0, "Y": 0, "Z": -1.5,
+            "X":0, "Y": 0, "Z": -2,
             "Pitch": 0, "Roll": 0, "Yaw": 0
           }
          },
@@ -56,7 +56,7 @@
   },
   "SubWindows": [
     {"WindowID": 0, "ImageType": 0, "CameraName": "3", "Visible": true},
-    {"WindowID": 1, "ImageType": 7, "CameraName": "IR_Pano", "Visible": true},
+    {"WindowID": 1, "ImageType": 7, "CameraName": "IR_Center", "Visible": true},
     {"WindowID": 2, "ImageType": 6, "CameraName": "3", "Visible": true}
   ]
 }
