@@ -15,20 +15,25 @@ import numpy as np
 import time
 from geometry_msgs.msg import Point
 import random
+from scipy.spatial.transform import Rotation as R
 # import visualization_msgs 
 from visualization_msgs.msg import Marker
 
 def CamMain():
     # for car use CarClient()
-    PD=0.9 # Prob of detection 
+    #=====PARAMETERS:
+    PD=1 # Prob of detection 
+    NoiseSD_x=0
+    NoiseSD_y=0
     client = airsim.CarClient()
     client.confirmConnection()
     # client.enableApiControl(True, "Car")
-    # ObjStatList=client.simListSceneObjects(name_regex='SF.*') # Static list for fusion
-    ObjStatList=client.simListSceneObjects(name_regex='Car.*|Tree.*') # Just Car, for testing
+    ObjStatList=client.simListSceneObjects(name_regex='SF.*') # Just cars, for testing in Neighborhood Scene
+    # ObjStatList=client.simListSceneObjects(name_regex='Car.*|Tree.*') # Just Car, for testing in Neighborhood Scene
+    # ObjStatList=client.simListSceneObjects(name_regex='Car.*') # Just cars, for testing in Neighborhood Scene
     # ObjStatList=client.simListSceneObjects() # All Objects in scene
-    print(ObjStatList)
-    
+    # print(ObjStatList)
+
     ObjListPos=[]
     ObjListOrn=[]
     startTime=time.time()
@@ -51,15 +56,33 @@ def CamMain():
     while not rospy.is_shutdown():
         EgoPose=client.simGetObjectPose('Car')
         # print(EgoPose)
-        ReturnPosList=AddPosNoise(UpdateRelativePose(client,ObjStatList,EgoPose),PD,0.25,0.25)
+        EgoTrnfMat= R.from_quat([EgoPose.orientation.x_val,EgoPose.orientation.y_val,EgoPose.orientation.z_val,EgoPose.orientation.w_val])
+        EgoTrnfMat=np.vstack((np.hstack((np.array(EgoTrnfMat.as_dcm()),np.array([EgoPose.position.x_val,EgoPose.position.y_val,EgoPose.position.z_val]).reshape((3,1)))),np.array([0,0,0,1])))
+        # print(EgoTrnfMat)
+        ReturnPosList=AddPosNoise(UpdateRelativePose(client,ObjStatList,EgoTrnfMat,EgoPose),PD,NoiseSD_x,NoiseSD_y)
         RadarMarkerPublisher(ReturnPosList,RdrMarkerPub)
         rate.sleep()
    
-def UpdateRelativePose(client,InputList,EgoPose):
+def UpdateRelativePose(client,InputList,EgoTrnfMat,EgoPose):
     ReturnList=[] # For now, just position, #TODO: relative vel and orientation
+    # ObjStatList=client.simListSceneObjects(name_regex='Car.*|Tree.*') # Cars and Trees, for testing in Neighborhood Scene
+    ObjStatList=client.simListSceneObjects(name_regex='SF.*') # Just cars, for testing in Neighborhood Scene
+    # EgoPose=client.simGetObjectPose('Car')
+    print(EgoPose.orientation)
     for itemDx in range(len(InputList)): 
-        tempPose=client.simGetObjectPose(InputList[itemDx])
-        ReturnList.append(tempPose.position-EgoPose.position)
+        objPose=client.simGetObjectPose(InputList[itemDx])
+        
+        # print(itemDx)
+        # print(ObjStatList[itemDx])
+        # print(objPose.orientation)
+        objTrnfMat= R.from_quat([EgoPose.orientation.x_val,EgoPose.orientation.y_val,-EgoPose.orientation.z_val,EgoPose.orientation.w_val]) 
+        # Invert it, to get direction cosines of I_hat, J_hat... of F_world in F_Car frame:
+        objTrnfMat=np.linalg.inv(objTrnfMat.as_dcm())
+        netTrnfMat=np.vstack((np.hstack((np.array(objTrnfMat),np.array([EgoPose.position.x_val,EgoPose.position.y_val,0]).reshape((3,1)))),np.array([0,0,0,1])))
+        objRelativePosVector=np.matmul(netTrnfMat,np.array([-objPose.position.y_val,-objPose.position.x_val,objPose.position.z_val,1]).reshape((4,1)))
+        # print(temp)
+        ReturnList.append(objRelativePosVector[:-1])
+        # print(ReturnList[-1][0])
     return ReturnList
 #TODO: Baselink/frame stuff
 
@@ -71,8 +94,8 @@ def AddPosNoise(InputList,PD,NoiseSD_x,NoiseSD_y):
         RandVal=random.random()
         if RandVal<= PD: # Object is detected:
             tempPose=InputList[itemDx]
-            tempPose.x_val=tempPose.x_val+noise_x[itemDx]
-            tempPose.y_val=tempPose.y_val+noise_y[itemDx]
+            tempPose[0]=tempPose[0]+noise_x[itemDx]
+            tempPose[1]=tempPose[1]+noise_y[itemDx]
             ReturnList.append(tempPose)
         else:
             pass
@@ -96,10 +119,10 @@ def RadarMarkerPublisher(InputList,RadarPublisher):
     for itemDxj in InputList:
         tempPoint=Point()
         
-        tempPoint.x=itemDxj.x_val
-        tempPoint.y=itemDxj.y_val
-        tempPoint.z=itemDxj.z_val
-        if any(np.isnan([itemDxj.x_val,itemDxj.y_val,itemDxj.z_val])):
+        tempPoint.x=itemDxj[0]
+        tempPoint.y=itemDxj[1]
+        tempPoint.z=itemDxj[2]
+        if any(np.isnan([itemDxj[0],itemDxj[1],itemDxj[2]])):
             # print('found NaN')
             pass
         else:
