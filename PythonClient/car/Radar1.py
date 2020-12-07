@@ -59,8 +59,9 @@ def CamMain():
         EgoTrnfMat= R.from_quat([EgoPose.orientation.x_val,EgoPose.orientation.y_val,EgoPose.orientation.z_val,EgoPose.orientation.w_val])
         EgoTrnfMat=np.vstack((np.hstack((np.array(EgoTrnfMat.as_dcm()),np.array([EgoPose.position.x_val,EgoPose.position.y_val,EgoPose.position.z_val]).reshape((3,1)))),np.array([0,0,0,1])))
         # print(EgoTrnfMat)
-        ReturnPosList=AddPosNoise(UpdateRelativePose(client,ObjStatList,EgoTrnfMat,EgoPose),PD,NoiseSD_x,NoiseSD_y)
-        RadarMarkerPublisher(ReturnPosList,RdrMarkerPub)
+        ReturnPositionList=AddPosNoise(UpdateRelativePose(client,ObjStatList,EgoTrnfMat,EgoPose),PD,NoiseSD_x,NoiseSD_y)
+        
+        RadarMarkerPublisher(ReturnPositionList,RdrMarkerPub)
         rate.sleep()
    
 def UpdateRelativePose(client,InputList,EgoTrnfMat,EgoPose):
@@ -101,7 +102,14 @@ def AddPosNoise(InputList,PD,NoiseSD_x,NoiseSD_y):
             pass
     return ReturnList
 
-
+## TODO: NEED THE FOLLOWING :
+# self.RdrReadings[-1].pose=data.objects[idx].pose.pose
+#             self.RdrReadings[-1].vx=data.objects[idx].twist.twist.linear.x
+#             self.RdrReadings[-1].vy=data.objects[idx].twist.twist.linear.y
+#             self.RdrReadings[-1].vx_comp=self.velX+data.objects[idx].twist.twist.linear.x
+#             self.RdrReadings[-1].vy_comp=self.velY+data.objects[idx].twist.twist.linear.y
+#             self.RdrReadings[-1].header=data.objects[idx].header
+#             self.RdrReadings[-1].id=data.objects[idx].id
 
 def RadarMarkerPublisher(InputList,RadarPublisher):
     # MarkerArrayIn=visualization_msgs.msg.MarkerArray()
